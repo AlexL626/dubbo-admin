@@ -27,12 +27,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
 public class NacosOpenapiUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(NacosOpenapiUtil.class);
+    
+    // 从环境变量读取 Nacos 认证信息
+    private static final String NACOS_USERNAME = System.getenv("NACOS_USERNAME");
+    private static final String NACOS_PASSWORD = System.getenv("NACOS_PASSWORD");
 
     public static List<NacosData> getSubscribeAddressesWithHttpEndpoint(URL url, String serviceName) {
         // 定义Nacos OpenAPI的URL
@@ -60,6 +65,16 @@ public class NacosOpenapiUtil {
 
             // 设置请求方法(GET或POST)
             connection.setRequestMethod("GET");
+            
+            // 添加 Basic 认证头
+            if (StringUtils.isNotEmpty(NACOS_USERNAME) && StringUtils.isNotEmpty(NACOS_PASSWORD)) {
+                String auth = NACOS_USERNAME + ":" + NACOS_PASSWORD;
+                String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+                connection.setRequestProperty("Authorization", "Basic " + encodedAuth);
+                logger.debug("Added Basic authentication for Nacos OpenAPI request");
+            } else {
+                logger.warn("Nacos username or password not configured, authentication will be skipped");
+            }
 
             // 发送请求并获取响应状态码
             int responseCode = connection.getResponseCode();

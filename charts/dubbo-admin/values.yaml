@@ -167,9 +167,9 @@ persistence:
   # Size of the persistent volume claim
   size: 10Gi
   # Name of an existing PersistentVolumeClaim to use
-  ClaimName: {}
-  # Configuration for emptyDir volume if used
-  emptyDir: {}
+  # ClaimName: {}
+  # # Configuration for emptyDir volume if used
+  # emptyDir: {}
 
 user:
   # Default username for the application
